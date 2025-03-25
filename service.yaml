@@ -1,0 +1,14 @@
+# fastapi-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: fastapi-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: fastapi-hello
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+

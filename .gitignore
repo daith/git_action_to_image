@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# macOS
+.DS_Store
+
+# VS Code
+.vscode/
+
+# Pytest / coverage
+.cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Docker
+*.log
+*.pid
+*.sqlite3
+
+# Kubernetes / DevSpace (optional)
+.devspace/
+
