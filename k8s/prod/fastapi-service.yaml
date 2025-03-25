@@ -1,6 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
+  namespace: fastapi-prod    
   name: fastapi-service
 spec:
   type: NodePort
@@ -10,4 +11,4 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 80
-      nodePort: 30081  # 可透過 http://<VPS_IP>:30080 存取
+      nodePort: 30081  

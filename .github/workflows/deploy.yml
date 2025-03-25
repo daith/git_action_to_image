@@ -22,17 +22,18 @@ jobs:
 
       - name: Upload Kubernetes YAML to VPS
         run: |
-          scp -o StrictHostKeyChecking=no fastapi-deployment.yaml fastapi-service.yaml ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/home/deploy/app/
-
+          scp k8s/prod/*.yaml \
+            ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/tmp/k8s/
       - name: Deploy via kubectl on VPS
         run: |
           ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
-            cd /home/deploy/app
+            set -e  # ❗自動 exit on error
+            cd /tmp/k8s
             microk8s kubectl apply -f fastapi-deployment.yaml
             microk8s kubectl apply -f fastapi-service.yaml
 
             DEPLOY_NAME=fastapi-hello
-            NAMESPACE=default
+            NAMESPACE=fastapi-prod
 
             echo "🔍 Checking if deployment exists..."
             if microk8s kubectl get deployment $DEPLOY_NAME -n $NAMESPACE > /dev/null 2>&1; then

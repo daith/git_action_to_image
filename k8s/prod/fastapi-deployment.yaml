@@ -1,6 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: fastapi-prod    
   name: fastapi-hello
   labels:
     app: fastapi-hello

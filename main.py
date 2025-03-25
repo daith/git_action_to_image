@@ -5,5 +5,5 @@ app = FastAPI()
 
 @app.get("/")
 def read_root():
-    return {"msg": "Hello from FastAPI on Kubernetes!"}
+    return {"msg": "Hello from FastAPI on Kubernetes 1234!"}
 

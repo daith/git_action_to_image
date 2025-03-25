@@ -1,8 +1,10 @@
-# fastapi-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: fastapi-dev
   name: fastapi-hello
+  labels:
+    app: fastapi-hello
 spec:
   replicas: 1
   selector:
@@ -14,8 +16,7 @@ spec:
         app: fastapi-hello
     spec:
       containers:
-      - name: fastapi
-        image: your-dockerhub-username/fastapi-hello:latest
-        ports:
-        - containerPort: 80
-
+        - name: fastapi
+          image: rin397/my-app:latest
+          ports:
+            - containerPort: 80
