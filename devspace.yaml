@@ -1,0 +1,39 @@
+version: v2beta1
+name: gitactiontoimage
+
+images:
+  fastapi-app:
+    image: rin397/my-app
+    dockerfile: ./Dockerfile
+    tags:
+      - dev
+
+deployments:
+  fastapi:
+    kubectl:
+      manifests:
+        - ./fastapi-deployment.yaml
+
+dev:
+  fastapi:
+    imageSelector: rin397/my-app
+    container: fastapi
+    command:
+      - uvicorn
+      - main:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "80"
+      - --reload
+    sync:
+      - path: ./
+        excludePaths:
+          - .git/
+          - .venv/
+          - __pycache__/
+
+commands:
+  deploy-service-once:
+    command: kubectl apply -f fastapi-service.yaml
+    description: 初次部署 Service（NodePort 不變）

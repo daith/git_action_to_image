@@ -39,3 +39,6 @@ id_rsa_github_action
 id_rsa_github_action.pub
 id_rsa_github_action_prod
 id_rsa_github_action_prod.pub
+
+# Ignore DevSpace cache and log folder
+.devspace/
