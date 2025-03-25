@@ -35,3 +35,5 @@ htmlcov/
 # Kubernetes / DevSpace (optional)
 .devspace/
 
+id_rsa_github_action
+id_rsa_github_action.pub
