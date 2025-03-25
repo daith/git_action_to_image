@@ -10,4 +10,4 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 80
-      nodePort: 30080  # 可透過 http://<VPS_IP>:30080 存取
+      nodePort: 30081  # 可透過 http://<VPS_IP>:30080 存取
