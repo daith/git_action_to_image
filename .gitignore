@@ -37,3 +37,5 @@ htmlcov/
 
 id_rsa_github_action
 id_rsa_github_action.pub
+id_rsa_github_action_prod
+id_rsa_github_action_prod.pub
