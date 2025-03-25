@@ -1,18 +1,29 @@
 version: v2beta1
 name: gitactiontoimage
 
-
 deployments:
   fastapi:
     kubectl:
       manifests:
-        - ./fastapi-deployment.yaml
+        - ./k8s/dev/fastapi-deployment.yaml
 
+commands:
+  setup-dev:
+    command: |
+      kubectl get ns fastapi-dev || kubectl create ns fastapi-dev
+      kubectl get svc fastapi-service -n fastapi-dev || kubectl apply -f k8s/dev/fastapi-service.yaml
+    description: 建立 dev namespace & service（只需第一次執行）
+
+  setup-prod:
+    command: |
+      kubectl get ns fastapi-prod || kubectl create ns fastapi-prod
+      kubectl get svc fastapi-service -n fastapi-prod || kubectl apply -f k8s/prod/fastapi-service.yaml
+    description: 建立 prod namespace & service（只需第一次執行）
 dev:
   fastapi:
-    container: fastapi
     labelSelector:
-      app: fastapi-hello   # 🔥 關鍵！指定這個 label，DevSpace 就能準確找 pod
+      app: fastapi-hello
+    container: fastapi
     command:
       - uvicorn
       - main:app
@@ -28,7 +39,42 @@ dev:
           - .venv/
           - __pycache__/
 
-commands:
-  deploy-service-once:
-    command: kubectl apply -f fastapi-service.yaml
-    description: 初次部署 Service（NodePort 不變）
+profiles:
+  - name: prod
+    patches:
+      - op: replace
+        path: deployments.fastapi.kubectl.manifests[0]
+        value: ./k8s/prod/fastapi-deployment.yaml
+      - op: replace
+        path: hooks.beforeDeploy[0].command
+        value: |
+          kubectl get ns fastapi-prod || kubectl create ns fastapi-prod
+      - op: replace
+        path: hooks.beforeDeploy[0].name
+        value: Ensure prod namespace exists
+      - op: replace
+        path: hooks.beforeDeploy[1].command
+        value: |
+          kubectl get svc fastapi-service -n fastapi-prod || kubectl apply -f k8s/prod/fastapi-service.yaml
+      - op: replace
+        path: hooks.beforeDeploy[1].name
+        value: Ensure prod service exists
+  - name: dev
+    patches:
+      - op: replace
+        path: deployments.fastapi.kubectl.manifests[0]
+        value: ./k8s/dev/fastapi-deployment.yaml
+      - op: replace
+        path: hooks.beforeDeploy[0].command
+        value: |
+          kubectl get ns fastapi-dev || kubectl create ns fastapi-dev
+      - op: replace
+        path: hooks.beforeDeploy[0].name
+        value: Ensure dev namespace exists
+      - op: replace
+        path: hooks.beforeDeploy[1].command
+        value: |
+          kubectl get svc fastapi-service -n fastapi-dev || kubectl apply -f k8s/dev/fastapi-service.yaml
+      - op: replace
+        path: hooks.beforeDeploy[1].name
+        value: Ensure dev service exists

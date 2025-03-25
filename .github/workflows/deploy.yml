@@ -29,6 +29,8 @@ jobs:
           ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
             set -e  # ❗自動 exit on error
             cd /tmp/k8s
+            microk8s kubectl get namespace fastapi-prod || microk8s kubectl create namespace fastapi-prod
+
             microk8s kubectl apply -f fastapi-deployment.yaml
             microk8s kubectl apply -f fastapi-service.yaml
 
