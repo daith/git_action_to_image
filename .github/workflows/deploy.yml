@@ -10,22 +10,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup SSH Key
+      - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
 
-      - name: SSH to VPS and update K8s deployment
+      - name: Upload Kubernetes YAML to VPS
+        run: |
+          scp -o StrictHostKeyChecking=no fastapi-deployment.yaml fastapi-service.yaml ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/home/deploy/app/
+
+      - name: Deploy via kubectl on VPS
         run: |
           ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
-            # 切到正確 context（如果有多個）
-            # kubectl config use-context ...
+            cd /home/deploy/app
+            microk8s kubectl apply -f fastapi-deployment.yaml
+            microk8s kubectl apply -f fastapi-service.yaml
 
-            # 更新部署，假設你的 deployment 名稱是 my-app
-            kubectl rollout restart deployment my-app -n default
+            DEPLOY_NAME=fastapi-hello
+            NAMESPACE=default
+
+            echo "🔍 Checking if deployment exists..."
+            if microk8s kubectl get deployment $DEPLOY_NAME -n $NAMESPACE > /dev/null 2>&1; then
+              echo "✅ Restarting deployment $DEPLOY_NAME"
+              microk8s kubectl rollout restart deployment $DEPLOY_NAME -n $NAMESPACE
+            else
+              echo "ℹ️ Deployment $DEPLOY_NAME not found, probably first-time deploy."
+            fi
           EOF

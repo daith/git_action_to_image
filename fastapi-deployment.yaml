@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fastapi-hello
+  labels:
+    app: fastapi-hello
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fastapi-hello
+  template:
+    metadata:
+      labels:
+        app: fastapi-hello
+    spec:
+      containers:
+        - name: fastapi
+          image: rin397/my-app:latest
+          ports:
+            - containerPort: 80
