@@ -23,7 +23,15 @@ jobs:
         run: |
           ssh ${{ secrets.AWS_CONTROL_USER }}@${{ secrets.AWS_CONTROL_HOST }} << 'EOF'
             set -e
-            cd /home/your-user/your-project  # 替換為你的實際路徑
+            PROJECT_DIR="/home/deploy/git_action_to_image"
+
+            # 若目錄不存在就先 clone
+            if [ ! -d "$PROJECT_DIR" ]; then
+              echo "📦 目錄不存在，開始 clone..."
+              git clone ${{ secrets.GIT_REPO_SSH_URL }} $PROJECT_DIR
+            fi
+
+            cd $PROJECT_DIR
             git pull origin main
             kubectl apply -f k8s/prod/
           EOF
