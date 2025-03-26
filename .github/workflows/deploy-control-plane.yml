@@ -34,4 +34,7 @@ jobs:
 
             cd "\$PROJECT_DIR"
             GIT_SSH_COMMAND="ssh -i ~/.ssh/id_rsa_github_deploy" git pull origin main
+
+            # ✅ 建立 namespace（若不存在）
+            kubectl get ns fastapi-prod || kubectl create ns fastapi-prod
             kubectl apply -f k8s/prod/
