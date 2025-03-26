@@ -25,12 +25,6 @@ jobs:
             set -e
             PROJECT_DIR="/home/deploy/git_action_to_image"
 
-            # 安裝 git（只針對 Amazon Linux）
-            if ! command -v git &> /dev/null; then
-              echo "🔧 安裝 Git..."
-              sudo yum install -y git
-            fi
-
             # 若目錄不存在就先 clone
             if [ ! -d "$PROJECT_DIR" ]; then
               echo "📦 目錄不存在，開始 clone..."
