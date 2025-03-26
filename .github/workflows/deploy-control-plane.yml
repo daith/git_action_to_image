@@ -29,10 +29,9 @@ jobs:
 
             if [ ! -d "\$PROJECT_DIR" ]; then
               echo "📦 目錄不存在，開始 clone..."
-              GIT_SSH_COMMAND="ssh -i ~/.ssh/id_rsa" git clone "\$REPO_URL" "\$PROJECT_DIR"
+              GIT_SSH_COMMAND="ssh -i ~/.ssh/id_rsa_github_deploy" git clone "\$REPO_URL" "\$PROJECT_DIR"
             fi
 
             cd "\$PROJECT_DIR"
-            GIT_SSH_COMMAND="ssh -i ~/.ssh/id_rsa" git pull origin main
+            GIT_SSH_COMMAND="ssh -i ~/.ssh/id_rsa_github_deploy" git pull origin main
             kubectl apply -f k8s/prod/
-          EOF
