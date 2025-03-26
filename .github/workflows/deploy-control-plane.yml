@@ -20,18 +20,21 @@ jobs:
           ssh-keyscan -H ${{ secrets.AWS_CONTROL_HOST }} >> ~/.ssh/known_hosts
 
       - name: Deploy to Control Plane
+        env:
+          GIT_REPO_SSH_URL: ${{ secrets.GIT_REPO_SSH_URL }}
         run: |
-          ssh ${{ secrets.AWS_CONTROL_USER }}@${{ secrets.AWS_CONTROL_HOST }} << 'EOF'
+          ssh ${{ secrets.AWS_CONTROL_USER }}@${{ secrets.AWS_CONTROL_HOST }} "bash -s" <<EOF
             set -e
             PROJECT_DIR="/home/deploy/git_action_to_image"
+            GIT_REPO_SSH_URL="$GIT_REPO_SSH_URL"
 
             # 若目錄不存在就先 clone
-            if [ ! -d "$PROJECT_DIR" ]; then
-              echo "📦 目錄不存在，開始 clone..."
-              git clone ${{ secrets.GIT_REPO_SSH_URL }} $PROJECT_DIR
+            if [ ! -d \"\$PROJECT_DIR\" ]; then
+              echo '📦 目錄不存在，開始 clone...'
+              GIT_SSH_COMMAND="ssh -i ~/.ssh/id_rsa_github_deploy" git clone \$GIT_REPO_SSH_URL \$PROJECT_DIR
             fi
 
-            cd $PROJECT_DIR
-            git pull origin main
+            cd \$PROJECT_DIR
+            GIT_SSH_COMMAND="ssh -i ~/.ssh/id_rsa_github_deploy" git pull origin main
             kubectl apply -f k8s/prod/
           EOF
